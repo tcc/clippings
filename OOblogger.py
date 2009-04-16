@@ -54,7 +54,7 @@ outputPath = ""
 tab_spc = 4
 styles = []
 styles_level_start = 2
-span_levels = ['font-size: 180%']
+span_levels = ['']
 pre_style = "background-color: #EEEEEE; border: #444444 1px solid; font-size: 80%"
 
 def scrubAnchor(text):
@@ -553,6 +553,14 @@ def hasGrandChild(tehItem):
         if grandchild: break
     return grandchild
 
+def hasChild(tehItem):
+    child = False
+    child = findSubNodes(tehItem, 'children')
+    if child and len(child)>0:
+        child = True
+    return child
+
+
 def digItem2(tehFile, tehItem, level, passed_style=None):
     items = 0
     grandchild = hasGrandChild(tehItem)
@@ -577,6 +585,7 @@ def digItem2(tehFile, tehItem, level, passed_style=None):
         spc = " "*tab_spc*(level-len(span_levels))
         pairs = []
         for itemNode in findSubNodes(childrenNode, 'item'):
+            child_pairs = []
             curr_style = None
             child_style = None
             style_idx = 0
@@ -602,17 +611,21 @@ def digItem2(tehFile, tehItem, level, passed_style=None):
             if preness=='Pre':
                 print >> tehFile, "<pre style=\"%s\">" % pre_style
                 pairs.append("</pre>")
-            elif not span_level:
+            elif span_level is not None:
+                if len(span_level)==0:
+                    # tehFile.write(spc+"<p>")
+                    if not hasChild(itemNode): child_pairs.append("<br/>\n")
+            else:
                 if items==0:
                     if heading in ['Legal','Numeric']:
-                        print >> tehFile, spc+"<ol>"
-                        pairs.append(spc+"</ol>")
+                        tehFile.write(spc+"<ol>")
+                        pairs.append("</ol>\n")
                     elif grandchild:
-                        print >> tehFile, spc+"<ul>"
-                        pairs.append(spc+"</ul>")
+                        tehFile.write(spc+"<ul>")
+                        pairs.append("</ul>\n")
                     else:
-                        print >> tehFile, "<div>"
-                        pairs.append("</div>")
+                        tehFile.write("<div>")
+                        pairs.append("</div>\n")
                 else:
                     if heading not in ['Legal','Numeric'] and not grandchild:
                         print >> tehFile, "<br/>"
@@ -623,9 +636,15 @@ def digItem2(tehFile, tehItem, level, passed_style=None):
             # print " "*level+"["+str(level)+"] "+str(heading)+": "+text
             if preness=='Pre':
                 tehFile.write(spc+text.strip())
-            elif span_level:
+            elif span_level is not None:
                 if len(text)>0:
-                    if heading in ['Legal','Numeric']:
+                    if len(span_level)==0:
+                        if hasChild(itemNode):
+                            tehFile.write(spc+text.strip())
+                        else:
+                            tehFile.write(spc+text.strip()+child_pairs[0])
+                            child_pairs.pop()
+                    elif heading in ['Legal','Numeric']:
                         print >> tehFile, spc+"""<span style="%(style)s">%(idx)s. %(text)s</span>""" % {'style':span_level, 'text':text, 'idx': items+1}
                     else:
                         print >> tehFile, spc+"""<span style="%(style)s">%(text)s</span>""" % {'style':span_level, 'text':text}
@@ -635,7 +654,10 @@ def digItem2(tehFile, tehItem, level, passed_style=None):
                 else:
                     tehFile.write(spc+text.strip())
             childs = digItem2(tehFile, itemNode, level+1, child_style)
-            if not span_level:
+            if len(child_pairs)==1:
+                tehFile.write(child_pairs[0])
+                child_pairs.pop()
+            elif span_level is None:
                 if preness=='Pre':
                     pass
                 elif heading in ['Legal','Numeric'] or grandchild:
@@ -644,7 +666,8 @@ def digItem2(tehFile, tehItem, level, passed_style=None):
             items += 1
         pairs.reverse()
         for pair in pairs:
-            print >> tehFile, pair
+            tehFile.write(pair)
+            # print >> tehFile, pair
     return items        
             
 def main2():
