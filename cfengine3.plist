@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+Language:     CFengine version 3
+Maintainer:   T.C. Chou <tcchou-at-tcchou.org>
+Last Change:  December 11 2011 
+Location:     ~/Library/Application Support/BBEdit/Language Modules
+
+BBEdit Language Module for CFengine3
+-->
+<plist version="1.0">
+<dict>
+	<key>BBEditDocumentType</key>
+	<string>CodelessLanguageModule</string>
+	<key>BBLMLanguageDisplayName</key>
+	<string>CFengine3</string>
+	<key>BBLMLanguageCode</key>
+	<string>CfE3</string>
+	<key>BBLMColorsSyntax</key>
+	<true/>
+	<key>BBLMScansFunctions</key>
+	<true/>
+	<key>BBLMIsCaseSensitive</key>
+	<false/>
+	<key>BBLMKeywordList</key>
+	<array>
+		<string>slist</string>
+		<string>signals</string>
+		<string>agent</string>
+		<string>common</string>
+		<string>server</string>
+		<string>executor</string>
+		<string>reporter</string>
+		<string>monitor</string>
+		<string>runagent</string>
+		<string>action</string>
+		<string>classes</string>
+		<string>contain</string>
+		<string>copy_from</string>
+		<string>delete</string>
+		<string>delete_select</string>
+		<string>depth_search</string>
+		<string>edit_defaults</string>
+		<string>file_select</string>
+		<string>link_from</string>
+		<string>perms</string>
+		<string>process_count</string>
+		<string>process_select</string>
+		<string>rename</string>
+		<string>body</string>
+		<string>todo</string>
+		<string>bundle</string>
+	</array>
+	<key>BBLMSuffixMap</key>
+	<array>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.cf</string>
+		</dict>
+	</array>
+	<key>Language Features</key>
+	<dict>
+		<key>Identifier and Keyword Character Class</key>
+		<string><![CDATA[0-9A-Z_a-z]]></string>
+
+		<key>Comment Pattern</key>
+		<string><![CDATA[(?x:
+            (?>	\#		.*			$			 )
+		)]]></string>
+
+		<key>Function Pattern</key>
+		<string><![CDATA[(?x:
+			(?P<function>
+                (?P<identifier>
+                    (?: \s+ )*
+                    (?P<function_name>
+                        (?: bundle | body )
+                        \s+
+                        (?>
+                            (?> 
+                                (?> _* [A-Za-z] [A-Za-z0-9_]* (?: \s+ )* )
+                                (?> _* [A-Za-z] [A-Za-z0-9_]*  )
+                                (?: (?: \s+ )* \( (?s:.*?) \) )?
+                            )
+                        )
+                    )
+				)
+                (?: (?> (?> \s+ ) | (?P>comment) ) )* { (?s:.*?) }
+			)
+            (?: \s | \z | \r | \n )
+		)]]></string>
+	  
+		<key>String Pattern</key>
+		<string><![CDATA[(?x:
+			(?>	"	(?s: \\. | [^"] )*?		(?: "   )	)
+		)]]></string>
+	</dict>
+</dict>
+</plist>
